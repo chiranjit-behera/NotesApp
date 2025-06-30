@@ -1,53 +1,68 @@
+// client/src/components/notes/CreateNote.js
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 
 export default function CreateNote() {
-
-  const currentDate = new Date().toLocaleDateString('en-GB').split('/').reverse().join('-'); // Get current date in "ddmmyyyy" format
-  const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Get current time in HH:mm format
-
   const [note, setNote] = useState({
     title: "",
     content: "",
-    date: currentDate,
-    time: currentTime,
+    date: "",
+    time: "",
+    tags: "", // NEW: Store as a comma-separated string for input
+    isPinned: false, // NEW: Checkbox state
+    color: "rgb(138, 111, 25)", // NEW: Color input state, default light beige
+    isFavorite: false, // NEW: Checkbox state
   });
+
   const navigate = useNavigate();
 
   const onChangeInput = (e) => {
-    const { name, value } = e.target;
-    setNote({ ...note, [name]: value });
+    const { name, value, type, checked } = e.target;
+    // Handle checkboxes differently
+    if (type === "checkbox") {
+      setNote({ ...note, [name]: checked });
+    } else {
+      setNote({ ...note, [name]: value });
+    }
   };
 
   const createNote = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("tokenStore");
-      if (token) {
-        const { title, content, date, time } = note;
-        const newNote = {
-          title,
-          content,
-          date,
-          time,
-        };
+      if (!token) return navigate("/"); // Redirect if no token
 
-        await axios.post(`${api}/api/notes`, newNote, {
-          headers: { Authorization: token },
-        });
-        return navigate("/");
-      }
+      // Prepare the note object for the API
+      const newNoteData = {
+        title: note.title,
+        content: note.content,
+        date: note.date,
+        time: note.time,
+        // Convert comma-separated tags string to an array of trimmed, lowercase tags
+        tags: note.tags.split(',').map(tag => tag.trim().toLowerCase()).filter(tag => tag !== ''),
+        isPinned: note.isPinned,
+        color: note.color,
+        isFavorite: note.isFavorite,
+      };
+
+      await axios.post(`${api}/api/notes`, newNoteData, {
+        headers: { Authorization: token },
+      });
+
+      navigate("/"); // Redirect to home on success
     } catch (err) {
-      window.location.href = "/";
+      console.error("Create Note error:", err.response ? err.response.data.msg : err.message);
+      alert(err.response ? err.response.data.msg : "Failed to create note."); // Show error to user
+      // No need for window.location.href, navigate is better
     }
   };
 
   return (
     <div className="create-note">
       <h2>Create Note</h2>
-      <form onSubmit={createNote}>
+      <form onSubmit={createNote} autoComplete="off">
         <div className="row">
           <label htmlFor="title">Title</label>
           <input
@@ -62,7 +77,6 @@ export default function CreateNote() {
         <div className="row">
           <label htmlFor="content">Content</label>
           <textarea
-            type="text"
             value={note.content}
             id="content"
             name="content"
@@ -71,29 +85,82 @@ export default function CreateNote() {
             onChange={onChangeInput}
           />
         </div>
-        <label htmlFor="date">
-          Date: {note.date} {note.time}{" "}
-        </label>
+
+        {/* NEW: Tags Input */}
         <div className="row">
+          <label htmlFor="tags">Tags (comma-separated, e.g., work, personal, idea)</label>
+          <input
+            type="text"
+            value={note.tags}
+            id="tags"
+            name="tags"
+            onChange={onChangeInput}
+            placeholder="Add tags like: todo, project, urgent"
+          />
+        </div>
+
+        <div className="row">
+          <label htmlFor="date">Date (optional)</label>
           <input
             type="date"
             id="date"
             name="date"
-            defaultValue={note.date}
+            value={note.date}
             onChange={onChangeInput}
-            required
           />
+        </div>
+
+        <div className="row">
+          <label htmlFor="time">Time (optional)</label>
           <input
             type="time"
             id="time"
             name="time"
-            defaultValue={note.time}
+            value={note.time}
             onChange={onChangeInput}
-            required
           />
         </div>
 
-        <button type="submit">Save</button>
+        {/* NEW: Pin, Favorite, Color Controls */}
+        <div className="row checkbox-row">
+          <label htmlFor="isPinned">
+            <input
+              type="checkbox"
+              id="isPinned"
+              name="isPinned"
+              checked={note.isPinned}
+              onChange={onChangeInput}
+            />
+            Pin Note 📌
+          </label>
+        </div>
+
+        <div className="row checkbox-row">
+          <label htmlFor="isFavorite">
+            <input
+              type="checkbox"
+              id="isFavorite"
+              name="isFavorite"
+              checked={note.isFavorite}
+              onChange={onChangeInput}
+            />
+            Favorite Note ⭐
+          </label>
+        </div>
+
+        <div className="row color-picker-row">
+          <label htmlFor="color">Note Color:</label>
+          <input
+            type="color"
+            id="color"
+            name="color"
+            value={note.color}
+            onChange={onChangeInput}
+          />
+          <span style={{ backgroundColor: note.color, width: '20px', height: '20px', display: 'inline-block', borderRadius: '4px', border: '1px solid #555', marginLeft: '10px' }}></span>
+        </div>
+
+        <button type="submit">Save Note</button>
       </form>
     </div>
   );

@@ -22,6 +22,25 @@ const userCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  // loginUser: async (req, res) => {
+  //   try {
+  //     const { email, password } = req.body;
+  //     const user = await Users.findOne({ email: email });
+  //     if (!user) return res.status(400).json({ msg: "User does not exist." });
+
+  //     const isMatch = await bcrypt.compare(password, user.password);
+  //     if (!isMatch) return res.status(400).json({ msg: "Incorrect password." });
+
+  //     const payload = { id: user._id, name: user.username };
+  //     const token = jwt.sign(payload, process.env.TOKEN_SECRET, {
+  //       expiresIn: "1d",
+  //     });
+
+  //     res.json({ token });
+  //   } catch (err) {
+  //     return res.status(500).json({ msg: err.message });
+  //   }
+  // },
   loginUser: async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -31,7 +50,11 @@ const userCtrl = {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ msg: "Incorrect password." });
 
+      // Include both id + username in token (since your notes need username)
       const payload = { id: user._id, name: user.username };
+
+      // console.log("Secret used for SIGNING: ", process.env.TOKEN_SECRET);
+
       const token = jwt.sign(payload, process.env.TOKEN_SECRET, {
         expiresIn: "1d",
       });

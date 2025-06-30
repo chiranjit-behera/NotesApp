@@ -3,12 +3,15 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const userRouter = require("./routes/userRouter");
 const noteRouter = require("./routes/noteRouter");
+const path = require('path');
 
 require("dotenv").config();
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use("/users", userRouter);
 app.use("/api/notes", noteRouter);
