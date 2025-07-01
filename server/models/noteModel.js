@@ -44,16 +44,30 @@ const noteSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    // --- NEW FIELD FOR ATTACHMENTS ---
-    attachments: [
-      {
-        filename: { type: String, required: true },
-        filepath: { type: String, required: true }, // URL or path to the stored file
-        mimetype: { type: String, required: true }, // e.g., 'image/jpeg', 'application/pdf', 'audio/webm'
-        size: { type: Number, default: 0 }, // File size in bytes
-        uploadedAt: { type: Date, default: Date.now },
-      },
+    isTrashed: {
+      type: Boolean,
+      default: false,
+    },
+    trashedAt: {
+      type: Date,
+      default: null, // Will be set when a note is moved to trash
+    },
+    checklistItems: [
+        {
+            id: { type: String, required: true }, // Using string for UUID or nanoid on frontend
+            text: { type: String, required: true, trim: true },
+            isCompleted: { type: Boolean, default: false }
+        }
     ],
+    // attachments: [
+    //   {
+    //     filename: { type: String, required: true },
+    //     filepath: { type: String, required: true }, // URL or path to the stored file
+    //     mimetype: { type: String, required: true }, // e.g., 'image/jpeg', 'application/pdf', 'audio/webm'
+    //     size: { type: Number, default: 0 }, // File size in bytes
+    //     uploadedAt: { type: Date, default: Date.now },
+    //   },
+    // ],
   },
   {
     timestamps: true,

@@ -1,8 +1,9 @@
 const axios = require("axios");
+const ENV = require("../config/env");
 
 const GeminiClient = {
   getSummary: async (content) => {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = ENV.GEMINI_API_KEY;
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
     console.log("content: ", content);

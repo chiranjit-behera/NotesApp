@@ -5,6 +5,7 @@ const userRouter = require("./routes/userRouter");
 const noteRouter = require("./routes/noteRouter");
 const path = require('path');
 const job = require("./config/cron");
+const ENV = require("./config/env");
 
 require("dotenv").config();
 
@@ -12,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-if (process.env.NODE_ENV === "production") job.start();
+if (ENV.NODE_ENV === "production") job.start();
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -23,7 +24,7 @@ app.get("/", (req, res) => {
 });
 
 mongoose
-  .connect(process.env.MONGO_URL, {
+  .connect(ENV.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -34,7 +35,7 @@ mongoose
     console.log(err.message);
   });
 
-const PORT = process.env.PORT || 8080;
+const PORT = ENV.PORT || 8080;
 app.listen(PORT, () => {
   console.log("Server started on port", PORT);
 });

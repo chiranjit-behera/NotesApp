@@ -742,3 +742,59 @@ a {
     margin-top: 5px;
   }
 }
+
+
+
+
+.trash-header {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 2em;
+    color: #666;
+}
+
+.trash-info {
+    text-align: center;
+    color: #888;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.trash-footer {
+    display: flex;
+    justify-content: space-around; /* Distribute buttons */
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.trash-footer button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.trash-footer button:hover {
+    opacity: 0.8;
+}
+
+.trash-footer button:first-child { /* Restore button */
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+
+.trash-footer button.delete-permanent-btn { /* Delete Permanently button */
+    background-color: #f44336; /* Red */
+    color: white;
+}
+
+.trashed-date, .delete-in-info {
+    font-size: 0.85em;
+    color: #777;
+    text-align: right;
+    margin-top: 5px;
+}

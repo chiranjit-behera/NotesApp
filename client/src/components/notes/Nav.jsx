@@ -21,6 +21,9 @@ export default function Nav({ setIsLogin }) {
         <li>
           <Link to="/create">Create Note</Link>
         </li>
+        <li>
+          <Link to="/trash">Trash</Link>
+          </li> {/* NEW LINK */}
         <li onClick={logoutSubmit}>
           <Link to="/">Logout</Link>
         </li>

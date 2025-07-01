@@ -1,6 +1,7 @@
 const Users = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const ENV = require("../config/env");
 
 const userCtrl = {
   registerUser: async (req, res) => {
@@ -22,25 +23,6 @@ const userCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
-  // loginUser: async (req, res) => {
-  //   try {
-  //     const { email, password } = req.body;
-  //     const user = await Users.findOne({ email: email });
-  //     if (!user) return res.status(400).json({ msg: "User does not exist." });
-
-  //     const isMatch = await bcrypt.compare(password, user.password);
-  //     if (!isMatch) return res.status(400).json({ msg: "Incorrect password." });
-
-  //     const payload = { id: user._id, name: user.username };
-  //     const token = jwt.sign(payload, process.env.TOKEN_SECRET, {
-  //       expiresIn: "1d",
-  //     });
-
-  //     res.json({ token });
-  //   } catch (err) {
-  //     return res.status(500).json({ msg: err.message });
-  //   }
-  // },
   loginUser: async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -53,9 +35,9 @@ const userCtrl = {
       // Include both id + username in token (since your notes need username)
       const payload = { id: user._id, name: user.username };
 
-      // console.log("Secret used for SIGNING: ", process.env.TOKEN_SECRET);
+      // console.log("Secret used for SIGNING: ", ENV.TOKEN_SECRET);
 
-      const token = jwt.sign(payload, process.env.TOKEN_SECRET, {
+      const token = jwt.sign(payload, ENV.TOKEN_SECRET, {
         expiresIn: "1d",
       });
 
@@ -69,7 +51,7 @@ const userCtrl = {
       const token = req.header("Authorization");
       if (!token) return res.send(false);
 
-      jwt.verify(token, process.env.TOKEN_SECRET, async (err, verified) => {
+      jwt.verify(token, ENV.TOKEN_SECRET, async (err, verified) => {
         if (err) return res.send(false);
 
         const user = await Users.findById(verified.id);
